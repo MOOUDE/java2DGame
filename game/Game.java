@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 class MyFrame extends JFrame{
 
@@ -43,7 +44,12 @@ class MyFrame extends JFrame{
     return result;
 
 }
+  
   public static int change;
+  public static int countC=0;
+  public static int charYPos=330,charXPos=30,charXVel,charYVel;
+  
+   
   private static int getRand(int min, int max) {
 
 		if (min >= max) {
@@ -56,15 +62,19 @@ class MyFrame extends JFrame{
      double var[] = new double[10];
      double vel[] = new double[10];
     class MyPanel extends JPanel{
-       BufferedImage imgs[] = new BufferedImage[10];
+       BufferedImage imgs[] = new BufferedImage[11];
         BufferedImage b;
         BufferedImage background;
          int M[] = new int[10];
-         
+         int yPos[] = {10,80,160,230,320,400,480,560,640,720,800,870}; 
    public  void change(int i ){
    M[i] = getRand(0,9);
+   yPos[i] = yPos[getRand(0, 11)]+getRand(0, 100);
     
-   }   
+   }
+
+   
+   
 public  int getChanged(int i){
 
 return change;
@@ -73,10 +83,13 @@ return change;
         //   this.setBackground(Color.black);
          for(int i=0;i<10;i++){
            var[i] = getRand(1,10);
-           vel[i] = 1;
+           vel[i] = 0.7;
           }
            
-                
+          charMove chMove = new charMove(1,1);        
+          this.addKeyListener(chMove);  
+         Thread mv = new Thread(new colesion());
+         mv.start();
         
            imgs [0] = (ImageIO.read(getClass().getResourceAsStream(M[1]+".png")));
            imgs [1] = (ImageIO.read(getClass().getResourceAsStream(getRand(0,9)+".png")));
@@ -88,6 +101,7 @@ return change;
            imgs [7] = (ImageIO.read(getClass().getResourceAsStream(getRand(0,9)+".png")));
            imgs [8] = (ImageIO.read(getClass().getResourceAsStream(getRand(0,9)+".png")));
            imgs [9] = (ImageIO.read(getClass().getResourceAsStream(getRand(0,9)+".png")));
+           imgs [10] = (ImageIO.read(getClass().getResourceAsStream("10.png")));
            
            background = ImageIO.read(getClass().getResourceAsStream("back.png"));
            
@@ -100,10 +114,15 @@ return change;
            // toolkit
            
         }
-    
        
+       
+          
+         
+        
+          
+          
         @Override
-        public void paintComponent(Graphics g){
+        public void paint(Graphics g){
           Toolkit kit = Toolkit.getDefaultToolkit();
           Graphics2D g2 = (Graphics2D)g;
           super.paintComponent(g2);
@@ -112,8 +131,6 @@ return change;
           g2.drawImage(background, 0, 0, 
                    (int)kit.getScreenSize().getWidth()/2 + 200 ,
                    (int)kit.getScreenSize().getHeight()/2 +100 ,null);
-          
-          
           
           
           Move  m0 = new Move(0,2);
@@ -127,22 +144,22 @@ return change;
           Move4  m8 = new Move4(0,2);
           Move5 m9 = new Move5(10,1);
           
-          int yPos[] = {10,80,160,230,320,400,480,560,640,720,800,880};
           
-           g2.drawImage(imgs[M[0]], 10,  m1.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[1]], 80,  m2.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[2]], 160, m3.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[3]], 230, m4.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[4]], 320, (int)m5.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[5]], 400, m6.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[6]], 480, m7.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[7]], 560, m8.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[8]], 640, m9.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[9]], 720, m1.setval(), 40 ,40,null);
-      //     g2.drawImage(imgs[M[1]], 800, m2.setval(), 40 ,40,null);
-     //      g2.drawImage(imgs[M[2]], 880, m1.setval(), 40 ,40,null);
+          
          
-           
+           g2.drawImage(imgs[M[0]],  yPos[1],  m1.setval(), 40 ,40,null);
+           g2.drawImage(imgs[M[1]],  yPos[2],  m2.setval(), 40 ,40,null);
+           g2.drawImage(imgs[M[2]],  yPos[3], m3.setval(), 40 ,40,null);
+           g2.drawImage(imgs[M[3]],  yPos[4], m4.setval(), 40 ,40,null);
+           g2.drawImage(imgs[M[4]],  yPos[5], (int)m5.setval(), 40 ,40,null);
+           g2.drawImage(imgs[M[5]],  yPos[6], m6.setval(), 40 ,40,null);
+         //  g2.drawImage(imgs[M[6]], 480, m7.setval(), 40 ,40,null);
+         //  g2.drawImage(imgs[M[7]], 560, m8.setval(), 40 ,40,null);
+        //   g2.drawImage(imgs[M[8]], 640, m9.setval(), 40 ,40,null);
+       //    g2.drawImage(imgs[M[9]], 720, m1.setval(), 40 ,40,null);
+      //     g2.drawImage(imgs[M[1]], 800, m2.setval(), 40 ,40,null);
+           g2.drawImage(imgs[10], charXPos, charYPos, 60 ,120,null);
+         
            
           m0.start(); 
           m1.start();
@@ -158,27 +175,159 @@ return change;
          
         } 
         
-       
+ class colesion implements Runnable{
+int bally,chary;
+
+            @Override
+            public void run() {
+           
+                while(true){
+                    for(int i=0 ; i<10 ; i++){
+                    bally = (int)var[i]; 
+                    chary = charYPos-30;
+                  System.out.print("");
+                    if( (bally > chary  ) && ((int)yPos[i] >= charXPos-20 && (int)yPos[i] <= charXPos+20) )  {
+                        
+                     
+                            System.out.println("cloesion"+countC);
+                            yPos[i] = getRand(-150,-30);
+                            countC++;
+                            
+                         //  try{ Thread.sleep(100);}
+                         //  catch(Exception e){e.printStackTrace();}
+                    }
+                }     
+              }           
+           
+               }
+            
+ 
+ }      
         
  //Mving obj threads 1        
+class charMove implements KeyListener,ActionListener,Runnable{
+   public int u=80 , g=10,t=1;
+   boolean jump=false;
+ public charMove(int Xvel , int Yvel){
+     
+     charXVel = Xvel;
+     charYVel = Yvel;
+     
+    
+     addKeyListener(this);
+     setFocusable(true);
+     setFocusTraversalKeysEnabled(false);
+     
+ }
+ 
+ @Override
+            public void run() {
+              
+                     
+                        
+                    
+                    
+                
+                while(true){
+                    //collision detection if(i <= 0 || i >=100
+                  
+                       
+                  if(jump){
+                   charYPos = charYPos + (u*t-(g/2)*t*t);
+                      System.out.println(charYPos);
+                   t++;
+                   charXPos +=10;
+                   
+                   jump = false;
+                  }
+                  if (t>1 || charYPos < 250){
+                   t=1;
+                   charYPos =330;
+                  }try{
+                  
+                  Thread.sleep(80);
+                  
+                  
+                  }catch(Exception e){e.printStackTrace();}
+                  repaint();
+                }
+            }
+ 
+  @Override
+            public void actionPerformed(ActionEvent ae) {
+               
+             charXPos = charXPos + charXVel;
+             charYPos = charYPos + charYVel;
+             repaint();
+            }
+    
+            @Override
+            public void keyTyped(KeyEvent ke) {
+            }
 
+            @Override
+            public void keyPressed(KeyEvent ke) {
+                int e = ke.getExtendedKeyCode();
+                
+                 if(charXPos < 0 ){
+                charXPos = 0;
+                }
+                if (charXPos > 815){
+                charXPos = 815;
+                }
+                
+                 if(e == KeyEvent.VK_RIGHT){
+                   charXVel = 5;  
+                   charYVel = 0;
+                     charXPos = charXPos + charXVel;
+                     charYPos = charYPos + charYVel;
+                     
+                    
+                 } if(e == KeyEvent.VK_LEFT){
+                   charXVel = -5;  
+                   charYVel = 0;
+                    charXPos = charXPos + charXVel;
+                     charYPos = charYPos + charYVel;
+                   
+                 }
+                 if(e == KeyEvent.VK_SPACE){
+                  jump =true;
+                 
+               
+                 }
+                 
+            }
+
+            @Override
+            public void keyReleased(KeyEvent ke) {
+            }
+
+            
+
+           
+
+
+
+}
      class Move extends Thread {
          
          public Move(int x , int y){
          }
          
      public void run(){
-        
+        synchronized(this){
          try{
          
        if( var[1] > 430 ){
            change(1);
-            vel[1] = 0.7;  
+          
             var[1] = getRand(-200,-50); 
             Thread.sleep(2000);
        }
+       vel[1]= vel[1] +0.0000002;
+            
        var[1] = var[1] + vel[1];    
-      
+     
              
        repaint();
        setval();
@@ -188,7 +337,10 @@ return change;
           }catch(Exception e){
           e.printStackTrace();
           }
+       
          
+      
+        }  
       }
      public double setval(){
       
@@ -203,16 +355,17 @@ return change;
          public Move2(int x , int y){
          }
      public void run(){
-          try{
+       synchronized(this){
+               try{
          
        if( var[2] > 430 ){
-           change(2);
+          change(2);
            
            var[2] = getRand(-100,0); 
-            vel[2] = 0.7;
+         
             Thread.sleep(2000);
        }
-          
+        vel[2]= vel[2] +0.0000002; 
        var[2] = var[2] + vel[2];    
        
             
@@ -225,6 +378,7 @@ return change;
           e.printStackTrace();
           }
           
+       }
       }
      public int setval(){
       
@@ -242,15 +396,17 @@ return change;
          public Move3(int x , int y){
          }
      public void run(){
-          try{
+         synchronized(this){
+         try{
          
        if( var[3] > 430 ){
-            change(3);
+         //   change(3);
            
            var[3] = getRand(-100,0); 
-            vel[3] = 0.7;
+           
              Thread.sleep(2000);
        }
+         vel[3]= vel[3] +0.0000002;
        var[3] = var[3] + vel[3];    
       
              
@@ -262,7 +418,7 @@ return change;
           }catch(Exception e){
           e.printStackTrace();
           }
-          
+         } 
       }
      public int setval(){
       
@@ -278,16 +434,17 @@ return change;
          public Move4(int x , int y){
          }
      public void run(){
-          try{
+          synchronized(this){ 
+         try{
          
      if( var[4] > 430 ){
-          change(4);
+       //   change(4);
         
            var[4] = getRand(-100,0); 
-            vel[4] = 0.7;
+            
             Thread.sleep(2000);
        }
-          
+       vel[4]= vel[4] +0.0000002;   
        var[4] = var[4] + vel[4];    
       
               
@@ -299,7 +456,7 @@ return change;
           }catch(Exception e){
           e.printStackTrace();
           }
-          
+          } 
       }
      public int setval(){
       
@@ -315,15 +472,16 @@ return change;
          public Move5(int x , int y){
          }
      public void run(){
-          try{
+          synchronized(this){ 
+         try{
          
        if( var[5] > 430 ){
-           change(5);
+         //  change(5);
            var[5] = getRand(-100,0); 
-            vel[5] = 0.7;
+           
             Thread.sleep(2000);  
        }
-          
+       vel[5]= vel[5] +0.0000002;   
        var[5] = var[5] + vel[5];    
       
        
@@ -335,7 +493,7 @@ return change;
           }catch(Exception e){
           e.printStackTrace();
           }
-          
+          } 
       }
      public int setval(){
       
