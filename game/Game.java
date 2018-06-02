@@ -17,7 +17,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 class MyFrame extends JFrame{
-
+  JLabel score;
     public MyFrame() throws Exception {
       super("Down Game");
         Toolkit kit = Toolkit.getDefaultToolkit(); 
@@ -26,11 +26,20 @@ class MyFrame extends JFrame{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
       //  this.setLocation((int)kit.getScreenSize().getWidth()/5 ,(int) kit.getScreenSize().getHeight()/4 );
+      
+        
+        
+      
         this.setLocationRelativeTo(null);   
         this.setResizable(false);
         Container c = this.getContentPane();
+       
+        
+           
         c.add(new MyPanel());
+      
         this.setVisible(true);
+        
     }
    
 
@@ -59,17 +68,19 @@ class MyFrame extends JFrame{
 		Random r = new Random();
 		return r.nextInt((max - min) + 1) + min;
 	} 
-     double var[] = new double[10];
-     double vel[] = new double[10];
+     double var[] = new double[12];
+     double vel[] = new double[12];
     class MyPanel extends JPanel{
        BufferedImage imgs[] = new BufferedImage[11];
         BufferedImage b;
         BufferedImage background;
+       
+        
          int M[] = new int[10];
-         int yPos[] = {10,80,160,230,320,400,480,560,640,720,800,870}; 
+         int yPos[] = {20,80,160,230,400,480,560,640,720,800,870}; 
    public  void change(int i ){
    M[i] = getRand(0,9);
-   yPos[i] = yPos[getRand(0, 11)]+getRand(0, 100);
+   yPos[i] = yPos[getRand(0, 10)]+getRand(0, 100);
     
    }
 
@@ -85,13 +96,14 @@ return change;
            var[i] = getRand(1,10);
            vel[i] = 0.7;
           }
-           
+          
+          
           charMove chMove = new charMove(1,1);        
           this.addKeyListener(chMove);  
-         Thread mv = new Thread(new colesion());
+         Thread mv = new Thread(chMove);
          mv.start();
         
-           imgs [0] = (ImageIO.read(getClass().getResourceAsStream(M[1]+".png")));
+           imgs [0] = (ImageIO.read(getClass().getResourceAsStream(getRand(0,9)+".png")));
            imgs [1] = (ImageIO.read(getClass().getResourceAsStream(getRand(0,9)+".png")));
            imgs [2] = (ImageIO.read(getClass().getResourceAsStream(getRand(0,9)+".png")));
            imgs [3] = (ImageIO.read(getClass().getResourceAsStream(getRand(0,9)+".png")));
@@ -105,7 +117,9 @@ return change;
            
            background = ImageIO.read(getClass().getResourceAsStream("back.png"));
            
-          
+            
+           
+           
           for(int i=0 ; i< 9 ; i++){
             M[i] = getRand(0,9);   
     
@@ -151,9 +165,9 @@ return change;
            g2.drawImage(imgs[M[1]],  yPos[2],  m2.setval(), 40 ,40,null);
            g2.drawImage(imgs[M[2]],  yPos[3], m3.setval(), 40 ,40,null);
            g2.drawImage(imgs[M[3]],  yPos[4], m4.setval(), 40 ,40,null);
-           g2.drawImage(imgs[M[4]],  yPos[5], (int)m5.setval(), 40 ,40,null);
+           g2.drawImage(imgs[M[4]],  yPos[5], m5.setval(), 40 ,40,null);
            g2.drawImage(imgs[M[5]],  yPos[6], m6.setval(), 40 ,40,null);
-         //  g2.drawImage(imgs[M[6]], 480, m7.setval(), 40 ,40,null);
+           g2.drawImage(imgs[M[6]], 480, m7.setval(), 40 ,40,null);
          //  g2.drawImage(imgs[M[7]], 560, m8.setval(), 40 ,40,null);
         //   g2.drawImage(imgs[M[8]], 640, m9.setval(), 40 ,40,null);
        //    g2.drawImage(imgs[M[9]], 720, m1.setval(), 40 ,40,null);
@@ -175,34 +189,7 @@ return change;
          
         } 
         
- class colesion implements Runnable{
-int bally,chary;
-
-            @Override
-            public void run() {
-           
-                while(true){
-                    for(int i=0 ; i<10 ; i++){
-                    bally = (int)var[i]; 
-                    chary = charYPos-30;
-                  System.out.print("");
-                    if( (bally > chary  ) && ((int)yPos[i] >= charXPos-20 && (int)yPos[i] <= charXPos+20) )  {
-                        
-                     
-                            System.out.println("cloesion"+countC);
-                            yPos[i] = getRand(-150,-30);
-                            countC++;
-                            
-                         //  try{ Thread.sleep(100);}
-                         //  catch(Exception e){e.printStackTrace();}
-                    }
-                }     
-              }           
-           
-               }
-            
- 
- }      
+      
         
  //Mving obj threads 1        
 class charMove implements KeyListener,ActionListener,Runnable{
@@ -219,18 +206,34 @@ class charMove implements KeyListener,ActionListener,Runnable{
      setFocusTraversalKeysEnabled(false);
      
  }
- 
+ int bally,charx,chary;
  @Override
             public void run() {
               
-                     
-                        
-                    
-                    
-                
+                 
                 while(true){
                     //collision detection if(i <= 0 || i >=100
-                  
+
+                       
+                    for(int i=0 ; i<12 ; i++){
+                    bally = (int)var[i]; 
+                    chary = charYPos-30;
+                  System.out.print("");
+                    if( (bally > chary  ) && ((int)yPos[i] >= charXPos-20 && (int)yPos[i] <= charXPos+20) )  {
+                        
+                     
+                            System.out.println("cloesion"+countC);
+                            yPos[i] = getRand(-150,-30);
+                            countC++;
+//                            score.setText("SCORE : "+countC);
+                            
+                         //  try{ Thread.sleep(100);}
+                         //  catch(Exception e){e.printStackTrace();}
+                    }
+                }     
+                        
+           
+                    //
                        
                   if(jump){
                    charYPos = charYPos + (u*t-(g/2)*t*t);
@@ -311,24 +314,23 @@ class charMove implements KeyListener,ActionListener,Runnable{
 }
      class Move extends Thread {
          
-         public Move(int x , int y){
+     public Move(int x , int y){
          }
-         
      public void run(){
-        synchronized(this){
-         try{
+       synchronized(this){
+               try{
          
        if( var[1] > 430 ){
-           change(1);
-          
-            var[1] = getRand(-200,-50); 
+          change(1);
+           
+           var[1] = getRand(-100,0); 
+         
             Thread.sleep(2000);
        }
-       vel[1]= vel[1] +0.0000002;
-            
+        vel[1]= vel[1] +0.0000002; 
        var[1] = var[1] + vel[1];    
-     
-             
+       
+            
        repaint();
        setval();
       
@@ -337,14 +339,12 @@ class charMove implements KeyListener,ActionListener,Runnable{
           }catch(Exception e){
           e.printStackTrace();
           }
-       
-         
-      
-        }  
+          
+       }
       }
-     public double setval(){
+     public int setval(){
       
-     return var[1];
+     return (int)var[1];
      }
       
     }//end of thread
